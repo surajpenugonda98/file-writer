@@ -7,7 +7,7 @@ pipeline {
     }
 
     environment {
-        REPO_URL = https://github.com/surajpenugonda98/file-writer.git'
+        REPO_URL = 'https://github.com/surajpenugonda98/file-writer.git'
     }
 
     stages {
