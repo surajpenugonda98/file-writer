@@ -25,7 +25,7 @@ jobs:
           branch=${{ steps.vars.outputs.branch }}
 
           if [[ "$branch" == "master" ]]; then
-            JOB_URL="$BASE_URL/job/file-writer-multi-branch/buildWithParameters?BRANCH=$branch"
+            JOB_URL="$BASE_URL/job/file-writer-multi-branch/build"
           elif [[ "$branch" == "staging" ]]; then
             JOB_URL="$BASE_URL/job/file-writer-multi-branch/buildWithParameters?BRANCH=$branch"
           elif [[ "$branch" == "live" ]]; then
