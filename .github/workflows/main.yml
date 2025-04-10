@@ -1,0 +1,24 @@
+name: Trigger Jenkins on Push
+
+on:
+  push:
+    branches: [ master, live, staging ]
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Branch Name
+        id: vars
+        run: echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_OUTPUT
+
+      - name: Trigger Jenkins Based on Branch
+        run: |
+          branch=${{ steps.vars.outputs.branch }}
+          if [[ "$branch" == "master" ]]; then
+            curl -X POST https://jenkins-dev.example.com/github-webhook/
+          elif [[ "$branch" == "prod" ]]; then
+            curl -X POST https://jenkins-staging.example.com/github-webhook/
+          elif [[ "$branch" == "live" ]]; then
+            curl -X POST https://jenkins-prod.example.com/github-webhook/
+          fi
