@@ -16,7 +16,7 @@ jobs:
         run: |
           branch=${{ steps.vars.outputs.branch }}
           if [[ "$branch" == "master" ]]; then
-            curl -X POST https://jenkins-dev.example.com/github-webhook/
+            curl -X POST https://d143-2607-fb90-c13e-502-b119-7f8f-8555-daa.ngrok-free.app/github-webhook/
           elif [[ "$branch" == "prod" ]]; then
             curl -X POST https://jenkins-staging.example.com/github-webhook/
           elif [[ "$branch" == "live" ]]; then
