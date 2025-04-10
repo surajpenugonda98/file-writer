@@ -25,11 +25,11 @@ jobs:
           branch=${{ steps.vars.outputs.branch }}
 
           if [[ "$branch" == "master" ]]; then
-            JOB_URL="$BASE_URL/job/dev-pipeline/buildWithParameters?BRANCH=$branch"
+            JOB_URL="$BASE_URL/job/file-writer-multi-branch/buildWithParameters?BRANCH=$branch"
           elif [[ "$branch" == "staging" ]]; then
-            JOB_URL="$BASE_URL/job/staging-pipeline/buildWithParameters?BRANCH=$branch"
+            JOB_URL="$BASE_URL/job/file-writer-multi-branch/buildWithParameters?BRANCH=$branch"
           elif [[ "$branch" == "live" ]]; then
-            JOB_URL="$BASE_URL/job/prod-pipeline/buildWithParameters?BRANCH=$branch"
+            JOB_URL="$BASE_URL/job/file-writer-multi-branch/buildWithParameters?BRANCH=$branch"
           fi
 
           echo "Triggering Jenkins job for $branch: $JOB_URL"
