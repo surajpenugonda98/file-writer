@@ -1,69 +1,38 @@
-name: Trigger Jenkins on Push
+name: Trigger Jenkins Job
 
 on:
   push:
-    branches: [ master, live, staging ]
+    branches:
+      - master
+      - staging
+      - live
 
 jobs:
-  trigger:
+  trigger-jenkins:
     runs-on: ubuntu-latest
+
     steps:
       - name: Get Branch Name
         id: vars
         run: echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
 
-      - name: Trigger Jenkins Based on Branch
+      - name: Trigger Jenkins Job
         env:
-          GITHUB_REPO: ${{ github.repository }}
-          COMMIT_ID: ${{ github.sha }}
+          JENKINS_USER: ${{ secrets.JENKINS_USER }}
+          JENKINS_TOKEN: ${{ secrets.JENKINS_TOKEN }}
+          BASE_URL: https://d143-2607-fb90-c13e-502-b119-7f8f-8555-daa.ngrok-free.app  # Replace with your Jenkins URL
         run: |
           branch=${{ steps.vars.outputs.branch }}
-          
+
           if [[ "$branch" == "master" ]]; then
-            curl -X POST https://d143-2607-fb90-c13e-502-b119-7f8f-8555-daa.ngrok-free.app/github-webhook/ \
-              -H "Content-Type: application/json" \
-              -H "X-GitHub-Event: push" \
-              -d '{
-                    "ref": "refs/heads/master",
-                    "repository": {
-                      "full_name": "'"${GITHUB_REPO}"'",
-                      "clone_url": "https://github.com/'"${GITHUB_REPO}"'.git"
-                    },
-                    "head_commit": {
-                      "id": "'"${COMMIT_ID}"'",
-                      "message": "Triggered via GitHub Actions"
-                    }
-                  }'
-
+            JOB_URL="$BASE_URL/job/dev-pipeline/buildWithParameters?BRANCH=$branch"
           elif [[ "$branch" == "staging" ]]; then
-            curl -X POST https://jenkins-staging.example.com/github-webhook/ \
-              -H "Content-Type: application/json" \
-              -H "X-GitHub-Event: push" \
-              -d '{
-                    "ref": "refs/heads/staging",
-                    "repository": {
-                      "full_name": "'"${GITHUB_REPO}"'",
-                      "clone_url": "https://github.com/'"${GITHUB_REPO}"'.git"
-                    },
-                    "head_commit": {
-                      "id": "'"${COMMIT_ID}"'",
-                      "message": "Triggered via GitHub Actions"
-                    }
-                  }'
-
+            JOB_URL="$BASE_URL/job/staging-pipeline/buildWithParameters?BRANCH=$branch"
           elif [[ "$branch" == "live" ]]; then
-            curl -X POST https://jenkins-prod.example.com/github-webhook/ \
-              -H "Content-Type: application/json" \
-              -H "X-GitHub-Event: push" \
-              -d '{
-                    "ref": "refs/heads/live",
-                    "repository": {
-                      "full_name": "'"${GITHUB_REPO}"'",
-                      "clone_url": "https://github.com/'"${GITHUB_REPO}"'.git"
-                    },
-                    "head_commit": {
-                      "id": "'"${COMMIT_ID}"'",
-                      "message": "Triggered via GitHub Actions"
-                    }
-                  }'
+            JOB_URL="$BASE_URL/job/prod-pipeline/buildWithParameters?BRANCH=$branch"
           fi
+
+          echo "Triggering Jenkins job for $branch: $JOB_URL"
+
+          curl -X POST "$JOB_URL" \
+            --user "$JENKINS_USER:$JENKINS_TOKEN"
